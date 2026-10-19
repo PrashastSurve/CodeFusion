@@ -1,16 +1,14 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { 
   Terminal, 
   MessageSquareCode, 
   Code2, 
   Sparkles, 
   FileText, 
-  GitBranch, 
-  ArrowRight,
-  User,
   LogOut,
-  Layers,
-  Compass
+  Compass,
+  User
 } from 'lucide-react';
 import { projectMetadata } from '../data/mockProjectData';
 
@@ -32,13 +30,21 @@ export default function Navbar({
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-[#1E1E1E] px-4 lg:px-8 py-3">
+    <motion.header 
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="sticky top-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-[#1E1E1E] px-4 lg:px-8 py-3"
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         
         {/* Brand */}
         <div className="flex items-center gap-3">
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setCurrentPage('landing')}
+            data-cursor="HOME"
             className="flex items-center gap-2.5 text-left group cursor-pointer"
           >
             <div className="w-9 h-9 bg-[#141414] border border-[#262626] group-hover:border-[#D5FF00] flex items-center justify-center font-display text-lg text-[#F4F3ED] group-hover:text-[#D5FF00] transition-colors">
@@ -59,21 +65,28 @@ export default function Navbar({
                 <span className="text-[#D5FF00]">● 98.4% RAG</span>
               </div>
             </div>
-          </button>
+          </motion.button>
         </div>
 
         {/* Center Nav: Landing vs Workspaces */}
-        <nav className="hidden md:flex items-center bg-[#111111] p-1 rounded-none border border-[#222222]">
+        <nav className="hidden md:flex items-center bg-[#111111] p-1 border border-[#222222] font-mono text-xs uppercase relative">
           <button
             onClick={() => setCurrentPage('landing')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono tracking-wider uppercase transition-colors ${
-              currentPage === 'landing'
-                ? 'bg-[#1C1C1C] text-[#D5FF00] font-semibold border-b-2 border-[#D5FF00]'
-                : 'text-[#888888] hover:text-[#F4F3ED]'
+            className={`relative px-3.5 py-1.5 transition-colors z-10 ${
+              currentPage === 'landing' ? 'text-[#0A0A0A] font-bold' : 'text-[#888888] hover:text-[#F4F3ED]'
             }`}
           >
-            <Compass className="w-3.5 h-3.5" />
-            <span>Landing</span>
+            {currentPage === 'landing' && (
+              <motion.div
+                layoutId="activeNavBackground"
+                className="absolute inset-0 bg-[#D5FF00] z-[-1]"
+                transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              />
+            )}
+            <span className="flex items-center gap-1.5">
+              <Compass className="w-3.5 h-3.5" />
+              <span>Landing</span>
+            </span>
           </button>
 
           <span className="text-[#333333] px-1">/</span>
@@ -88,15 +101,21 @@ export default function Navbar({
                   setCurrentPage('platform');
                   setActiveWorkspace(ws.id);
                 }}
-                className={`flex items-center gap-2 px-3 py-1.5 text-xs font-mono tracking-wider uppercase transition-colors ${
-                  isActive
-                    ? 'bg-[#1C1C1C] text-[#D5FF00] font-semibold border-b-2 border-[#D5FF00]'
-                    : 'text-[#888888] hover:text-[#F4F3ED]'
+                className={`relative px-3.5 py-1.5 transition-colors z-10 ${
+                  isActive ? 'text-[#0A0A0A] font-bold' : 'text-[#888888] hover:text-[#F4F3ED]'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#D5FF00]' : 'text-[#666666]'}`} />
-                <span>{ws.name}</span>
-                <span className="text-[9px] text-[#555555]">[{ws.tag}]</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="activeNavBackground"
+                    className="absolute inset-0 bg-[#D5FF00] z-[-1]"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  />
+                )}
+                <span className="flex items-center gap-1.5">
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{ws.name}</span>
+                </span>
               </button>
             );
           })}
@@ -106,8 +125,11 @@ export default function Navbar({
         <div className="flex items-center gap-2.5">
           
           {/* AI Copilot Trigger */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={onOpenCopilot}
+            data-cursor="COPILOT"
             className="flex items-center gap-2 px-3.5 py-1.5 bg-[#141414] hover:bg-[#1E1E1E] border border-[#2E2E2E] hover:border-[#D5FF00] text-[#D5FF00] font-mono text-xs font-bold transition-all cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -115,23 +137,26 @@ export default function Navbar({
             <kbd className="hidden lg:inline px-1 py-0.2 bg-[#0A0A0A] rounded text-[9px] text-[#777777]">
               Ctrl+K
             </kbd>
-          </button>
+          </motion.button>
 
           {/* Synopsis */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={onOpenSynopsis}
+            data-cursor="SYNOPSIS"
             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-[#141414] hover:bg-[#1A1A1A] border border-[#222222] text-[#888888] hover:text-[#F4F3ED] text-xs font-mono transition-colors"
           >
             <FileText className="w-3.5 h-3.5" />
             <span>SYNOPSIS</span>
-          </button>
+          </motion.button>
 
           {/* User Auth state */}
           {user ? (
             <div className="flex items-center gap-2 pl-2 border-l border-[#222222]">
               <div 
                 title={`${user.name} (${user.role})`}
-                className="flex items-center gap-2 px-2.5 py-1 rounded bg-[#161616] border border-[#262626] text-xs font-mono"
+                className="flex items-center gap-2 px-2.5 py-1 bg-[#161616] border border-[#262626] text-xs font-mono"
               >
                 <span className="w-2 h-2 rounded-full bg-[#D5FF00]"></span>
                 <span className="text-[#F4F3ED] font-bold">{user.avatar}</span>
@@ -146,13 +171,16 @@ export default function Navbar({
               </button>
             </div>
           ) : (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
               onClick={onOpenLogin}
+              data-cursor="LOGIN"
               className="neon-btn px-4 py-1.5 font-grotesk text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
             >
               <User className="w-3.5 h-3.5" />
               <span>SIGN IN</span>
-            </button>
+            </motion.button>
           )}
 
         </div>
@@ -180,6 +208,6 @@ export default function Navbar({
           </button>
         ))}
       </div>
-    </header>
+    </motion.header>
   );
 }

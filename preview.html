@@ -54,10 +54,65 @@
     @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
     .ticker-track { display: flex; width: max-content; animation: ticker 25s linear infinite; }
     .ticker-track:hover { animation-play-state: paused; }
+    /* Keyframe reveals */
+    @keyframes lineUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .anim-line-1 { animation: lineUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-line-2 { animation: lineUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards; }
+    .anim-line-3 { animation: lineUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards; }
+    /* Custom cursor */
+    .cursor-dot {
+      position: fixed; top: 0; left: 0; width: 8px; height: 8px; background: #D5FF00; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: opacity 0.2s;
+    }
+    .cursor-ring {
+      position: fixed; top: 0; left: 0; width: 34px; height: 34px; border: 1.5px solid rgba(213,255,0,0.5); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
+    }
+    .cursor-ring.active {
+      width: 56px; height: 56px; background-color: rgba(213,255,0,0.1); border-color: #D5FF00;
+    }
   </style>
 </head>
 <body class="bg-[#0A0A0A] text-[#F4F3ED] overflow-x-hidden min-h-screen">
+  <div class="cursor-dot hidden md:block" id="cursorDot"></div>
+  <div class="cursor-ring hidden md:block" id="cursorRing"></div>
   <div id="root"></div>
+
+  <script>
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (dot) {
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+      }
+    });
+
+    function renderRing() {
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+      if (ring) {
+        ring.style.left = ringX + 'px';
+        ring.style.top = ringY + 'px';
+      }
+      requestAnimationFrame(renderRing);
+    }
+    renderRing();
+
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest('button, a, input, select, textarea, [data-cursor]')) {
+        ring && ring.classList.add('active');
+      } else {
+        ring && ring.classList.remove('active');
+      }
+    });
+  </script>
 
   <script type="text/babel">
     const { useState, useEffect } = React;

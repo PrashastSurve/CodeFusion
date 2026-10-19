@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import LandingPage from './components/LandingPage';
 import CommunicationWorkspace from './components/CommunicationWorkspace';
@@ -7,6 +8,8 @@ import CreativeWorkspace from './components/CreativeWorkspace';
 import SynopsisModal from './components/SynopsisModal';
 import AiCopilotDock from './components/AiCopilotDock';
 import LoginModal from './components/LoginModal';
+import CustomCursor from './components/CustomCursor';
+import BackgroundMotion from './components/BackgroundMotion';
 import { projectMetadata } from './data/mockProjectData';
 import { ArrowUpRight, CheckCircle2 } from 'lucide-react';
 
@@ -52,8 +55,14 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#F4F3ED] flex flex-col font-sans selection:bg-[#D5FF00] selection:text-[#0A0A0A]">
+    <div className="relative min-h-screen bg-[#0A0A0A] text-[#F4F3ED] flex flex-col font-sans selection:bg-[#D5FF00] selection:text-[#0A0A0A] overflow-x-hidden">
       
+      {/* Custom Spring Follower Cursor */}
+      <CustomCursor />
+
+      {/* Floating Motorsport Grid & Ambient Orbs */}
+      <BackgroundMotion />
+
       {/* Top Navbar */}
       <Navbar 
         currentPage={currentPage}
@@ -67,36 +76,89 @@ export default function App() {
         onOpenCopilot={() => setIsCopilotOpen(true)}
       />
 
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 p-4 bg-[#141414] border border-[#D5FF00] text-xs font-mono text-[#F4F3ED] shadow-2xl flex items-center gap-3 animate-fadeIn">
-          <CheckCircle2 className="w-4 h-4 text-[#D5FF00]" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
+      {/* Animated Toast Notification */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20, x: 20 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, y: -20, x: 20 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            className="fixed top-20 right-6 z-50 p-4 bg-[#141414] border border-[#D5FF00] text-xs font-mono text-[#F4F3ED] shadow-2xl flex items-center gap-3"
+          >
+            <CheckCircle2 className="w-4 h-4 text-[#D5FF00]" />
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Main Body */}
-      {currentPage === 'landing' ? (
-        <LandingPage 
-          onOpenLogin={() => setIsLoginModalOpen(true)}
-          onEnterPlatform={handleEnterPlatform}
-          onOpenSynopsis={() => setIsSynopsisOpen(true)}
-        />
-      ) : (
-        <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8 pb-24">
-          {activeWorkspace === 'communication' && (
-            <CommunicationWorkspace onOpenCopilot={() => setIsCopilotOpen(true)} />
-          )}
+      {/* Main Animated Route Switcher */}
+      <div className="flex-1 relative z-10">
+        <AnimatePresence mode="wait">
+          {currentPage === 'landing' ? (
+            <motion.div
+              key="landing-page"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <LandingPage 
+                onOpenLogin={() => setIsLoginModalOpen(true)}
+                onEnterPlatform={handleEnterPlatform}
+                onOpenSynopsis={() => setIsSynopsisOpen(true)}
+              />
+            </motion.div>
+          ) : (
+            <motion.main
+              key="platform-page"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-7xl w-full mx-auto p-4 lg:p-8 pb-24"
+            >
+              <AnimatePresence mode="wait">
+                {activeWorkspace === 'communication' && (
+                  <motion.div
+                    key="communication-ws"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <CommunicationWorkspace onOpenCopilot={() => setIsCopilotOpen(true)} />
+                  </motion.div>
+                )}
 
-          {activeWorkspace === 'development' && (
-            <DevelopmentWorkspace onOpenCopilot={() => setIsCopilotOpen(true)} />
-          )}
+                {activeWorkspace === 'development' && (
+                  <motion.div
+                    key="development-ws"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <DevelopmentWorkspace onOpenCopilot={() => setIsCopilotOpen(true)} />
+                  </motion.div>
+                )}
 
-          {activeWorkspace === 'creative' && (
-            <CreativeWorkspace onOpenCopilot={() => setIsCopilotOpen(true)} />
+                {activeWorkspace === 'creative' && (
+                  <motion.div
+                    key="creative-ws"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <CreativeWorkspace onOpenCopilot={() => setIsCopilotOpen(true)} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.main>
           )}
-        </main>
-      )}
+        </AnimatePresence>
+      </div>
 
       {/* Global AI Copilot Dock */}
       <AiCopilotDock 
@@ -118,7 +180,7 @@ export default function App() {
       />
 
       {/* Bottom Status Strip */}
-      <footer className="border-t border-[#1C1C1C] bg-[#0A0A0A] py-5 px-6 lg:px-12 text-xs font-mono text-[#666666]">
+      <footer className="relative z-10 border-t border-[#1C1C1C] bg-[#0A0A0A] py-5 px-6 lg:px-12 text-xs font-mono text-[#666666]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="font-bold text-[#F4F3ED] flex items-center gap-2">
@@ -132,6 +194,7 @@ export default function App() {
           <div className="flex items-center gap-6 text-[11px]">
             <button
               onClick={() => setIsSynopsisOpen(true)}
+              data-cursor="SYNOPSIS"
               className="text-[#D5FF00] hover:underline flex items-center gap-1 cursor-pointer"
             >
               <span>OFFICIAL PROJECT SYNOPSIS</span>
