@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeFusion — AI-Powered Software Development Intelligence Platform</title>
+
+  <!-- Google Fonts: Bebas Neue, Space Grotesk, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            jet: '#0A0A0A',
+            card: '#121212',
+            offwhite: '#F4F3ED',
+            lime: '#D5FF00',
+            subtleGrey: '#777777',
+            borderGrey: '#222222'
+          },
+          fontFamily: {
+            display: ['"Bebas Neue"', 'sans-serif'],
+            sans: ['"Inter"', 'sans-serif'],
+            grotesk: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React 18 & Babel Standalone -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body { background-color: #0A0A0A; color: #F4F3ED; margin: 0; font-family: 'Inter', sans-serif; }
+    ::selection { background-color: #D5FF00; color: #0A0A0A; }
+    .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; }
+    .font-grotesk { font-family: 'Space Grotesk', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .neon-btn { background-color: #D5FF00; color: #0A0A0A; font-weight: 700; transition: all 0.2s ease; }
+    .neon-btn:hover { background-color: #F4F3ED; box-shadow: 0 0 25px rgba(213,255,0,0.4); }
+    .card-dark { background-color: #121212; border: 1px solid #222222; }
+    .text-outline { -webkit-text-stroke: 1.5px rgba(244, 243, 237, 0.25); color: transparent; }
+    @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .ticker-track { display: flex; width: max-content; animation: ticker 25s linear infinite; }
+    .ticker-track:hover { animation-play-state: paused; }
+  </style>
+</head>
+<body class="bg-[#0A0A0A] text-[#F4F3ED] overflow-x-hidden min-h-screen">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const projectMetadata = {
+      title: "CodeFusion",
+      version: "v1.0.4-beta",
+      team: [
+        { name: "Mayank Thakur", roll: "2402", enrollment: "24111000167", role: "Full Stack & Architecture", avatar: "MT" },
+        { name: "Kinjal Mhabdi", roll: "2434", enrollment: "24111000364", role: "AI Pipeline & Prompts", avatar: "KM" },
+        { name: "Urjita Shikhare", roll: "2463", enrollment: "24111000394", role: "Frontend & Presentation", avatar: "US" },
+        { name: "Prashast Surve", roll: "2464", enrollment: "24111000395", role: "Backend & Supabase Database", avatar: "PS" }
+      ]
+    };
+
+    const initialTasks = [
+      {
+        id: "TASK-101",
+        title: "Implement Supabase pgvector embedding search for RAG",
+        column: "in-progress",
+        priority: "High",
+        assignee: "Prashast Surve",
+        aiInsight: "Recommended chunk size: 512 tokens with 10% overlap to preserve semantic context across complex TypeScript files.",
+        subtasks: ["Configure pgvector in Supabase", "Create similarity match SQL function", "Implement batch embedding generator"]
+      },
+      {
+        id: "TASK-102",
+        title: "Construct Interactive Postman-style API Testing Suite",
+        column: "done",
+        priority: "Medium",
+        assignee: "Mayank Thakur",
+        aiInsight: "Endpoint telemetry shows average response time of 38ms across local mock services.",
+        subtasks: ["Build HTTP request panel", "Format JSON response viewer with latency timer"]
+      },
+      {
+        id: "TASK-103",
+        title: "Develop AI Documentation & README Auto-Generator",
+        column: "in-progress",
+        priority: "Urgent",
+        assignee: "Kinjal Mhabdi",
+        aiInsight: "Automated docs sync will save approximately 3.4 developer hours per sprint.",
+        subtasks: ["Parse JSDoc and TypeScript AST signatures", "Export to OpenAPI specification"]
+      },
+      {
+        id: "TASK-104",
+        title: "Build Presentation Slide Deck Builder for Academic Defense",
+        column: "review",
+        priority: "Medium",
+        assignee: "Urjita Shikhare",
+        aiInsight: "Slide structure aligns directly with academic evaluation guidelines.",
+        subtasks: ["Design presentation slide template", "Sync project synopsis into interactive slides"]
+      }
+    ];
+
+    const projectFiles = [
+      {
+        name: "ragEngine.ts",
+        path: "src/intelligence/ragEngine.ts",
+        language: "typescript",
+        lines: 32,
+        content: `import { GoogleGenAI } from '@google/genai';
+import { supabase } from '../lib/supabaseClient';
+
+export class ProjectIntelligenceEngine {
+  private ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+  async retrieveContext(query: string, matchThreshold = 0.82) {
+    const embedding = await this.ai.embedContent({
+      model: "text-embedding-004",
+      content: query
+    });
+
+    const { data: chunks, error } = await supabase.rpc('match_project_code', {
+      query_embedding: embedding.values,
+      match_threshold: matchThreshold,
+      match_count: 5
+    });
+
+    if (error) throw new Error(\`RAG Retrieval error: \${error.message}\`);
+    return chunks;
+  }
+}`
+      },
+      {
+        name: "authController.ts",
+        path: "src/api/v1/authController.ts",
+        language: "typescript",
+        lines: 24,
+        content: `import { Request, Response } from 'express';
+import { supabase } from '../../lib/supabaseClient';
+
+export async function loginDeveloper(req: Request, res: Response) {
+  const { email, password } = req.body;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) return res.status(401).json({ error: error.message });
+
+  return res.status(200).json({
+    message: "Developer authenticated successfully.",
+    user: data.user,
+    token: data.session.access_token
+  });
+}`
+      }
+    ];
+
+    const mockApiEndpoints = [
+      {
+        method: "POST",
+        path: "/api/v1/intelligence/query",
+        name: "Project RAG Query",
+        defaultBody: JSON.stringify({ query: "How does vector matching authenticate?", topK: 3 }, null, 2),
+        response: {
+          status: 200,
+          statusText: "OK",
+          time: "41ms",
+          size: "1.4 KB",
+          body: {
+            success: true,
+            engine: "CodeFusion-RAG-v1",
+            citations: ["src/intelligence/ragEngine.ts", "supabase/migrations/schema.sql"],
+            answer: "Authentication is verified via Supabase Auth JWT before vector search. Supabase Row Level Security restricts queries strictly to authenticated project contributors."
+          }
+        }
+      },
+      {
+        method: "GET",
+        path: "/api/v1/analytics/health",
+        name: "System Health Score",
+        defaultBody: "",
+        response: {
+          status: 200,
+          statusText: "OK",
+          time: "18ms",
+          size: "950 B",
+          body: {
+            project: "CodeFusion",
+            overallScore: 94,
+            testCoverage: "92.4%",
+            vulnerabilities: 0,
+            activeTeam: 4
+          }
+        }
+      }
+    ];
+
+    const presentationSlides = [
+      {
+        title: "CodeFusion",
+        subtitle: "An AI-Powered Software Development Intelligence Platform",
+        badge: "PROJECT SYNOPSIS — ACADEMIC DEFENSE",
+        team: projectMetadata.team,
+        notes: "Present the team members and introduce CodeFusion as a unified intelligence platform."
+      },
+      {
+        title: "Problem Statement & Research Gap",
+        subtitle: "Context switching between tools fragments project knowledge",
+        badge: "SECTION 4 & 6: PROBLEM & GAP",
+        points: [
+          "Developers switch 1200+ times daily between VS Code, GitHub, Trello, Slack, and disjointed AI assistants.",
+          "Existing AI chatbots are prompt-only and lack persistent understanding of the full project.",
+          "CodeFusion eliminates tool fragmentation by providing a unified, context-aware environment."
+        ],
+        notes: "Highlight the 40% loss of engineer productivity due to disparate toolchains."
+      },
+      {
+        title: "Three Intelligent Workspaces",
+        subtitle: "Modular Architecture for Holistic Engineering",
+        badge: "SECTION 8: PROPOSED SOLUTION",
+        workspaces: [
+          { name: "Communication Workspace", desc: "AI Task Manager, Team Collaboration, Activity Timeline, Project Milestones." },
+          { name: "Development Workspace", desc: "Project Health Dashboard, GitHub Integration, Code Viewer, In-App API Testing." },
+          { name: "Creative Workspace", desc: "AI Documentation Generator, Slide Presentation Builder, Architecture Suggestions, AI-guided Learning." }
+        ],
+        notes: "Show how all 3 workspaces share the continuous Project Intelligence Engine."
+      }
+    ];
+
+    function App() {
+      const [currentPage, setCurrentPage] = useState('landing'); // 'landing' or 'platform'
+      const [activeWorkspace, setActiveWorkspace] = useState('development');
+      const [user, setUser] = useState(null);
+      const [showLogin, setShowLogin] = useState(false);
+      const [showSynopsis, setShowSynopsis] = useState(false);
+      const [showCopilot, setShowCopilot] = useState(false);
+      const [toast, setToast] = useState(null);
+
+      // Workspace states
+      const [tasks, setTasks] = useState(initialTasks);
+      const [activeDevTab, setActiveDevTab] = useState('code');
+      const [selectedFile, setSelectedFile] = useState(projectFiles[0]);
+      const [selectedEp, setSelectedEp] = useState(mockApiEndpoints[0]);
+      const [apiLoading, setApiLoading] = useState(false);
+      const [apiResult, setApiResult] = useState(mockApiEndpoints[0].response);
+      const [slideIdx, setSlideIdx] = useState(0);
+
+      const handleLogin = (provider) => {
+        setUser({
+          name: "Prashast Surve",
+          avatar: "PS",
+          role: "Core Developer",
+          provider: provider
+        });
+        setShowLogin(false);
+        setCurrentPage('platform');
+        setToast(`Logged in via ${provider} as Prashast Surve`);
+        setTimeout(() => setToast(null), 3000);
+      };
+
+      const handleSendApi = () => {
+        setApiLoading(true);
+        setTimeout(() => {
+          setApiLoading(false);
+          setApiResult({
+            ...selectedEp.response,
+            time: `${Math.floor(Math.random() * 20 + 20)}ms`
+          });
+        }, 400);
+      };
+
+      return (
+        <div className="min-h-screen bg-[#0A0A0A] text-[#F4F3ED] flex flex-col font-sans">
+          
+          {/* Top Navbar */}
+          <header className="sticky top-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-[#1E1E1E] px-6 lg:px-12 py-3.5">
+            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+              
+              <div 
+                onClick={() => setCurrentPage('landing')}
+                className="flex items-center gap-3 cursor-pointer group"
+              >
+                <div className="w-9 h-9 bg-[#141414] border border-[#262626] group-hover:border-[#D5FF00] flex items-center justify-center font-display text-lg text-[#F4F3ED] group-hover:text-[#D5FF00]">
+                  CF
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-display text-xl tracking-wider text-[#F4F3ED]">CODEFUSION</span>
+                    <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-[#181818] text-[#D5FF00] border border-[#2B2B2B]">®</span>
+                  </div>
+                  <div className="text-[10px] text-[#777777] font-mono">MOTORSPORT EDITORIAL // AI PLATFORM</div>
+                </div>
+              </div>
+
+              {/* Center Nav */}
+              <nav className="hidden md:flex items-center bg-[#111111] p-1 border border-[#222222] font-mono text-xs uppercase">
+                <button
+                  onClick={() => setCurrentPage('landing')}
+                  className={`px-3 py-1.5 ${currentPage === 'landing' ? 'bg-[#1C1C1C] text-[#D5FF00] font-bold border-b-2 border-[#D5FF00]' : 'text-[#888888] hover:text-[#F4F3ED]'}`}
+                >
+                  Landing
+                </button>
+                <span className="text-[#333333] px-1">/</span>
+                {['communication', 'development', 'creative'].map(ws => (
+                  <button
+                    key={ws}
+                    onClick={() => { setCurrentPage('platform'); setActiveWorkspace(ws); }}
+                    className={`px-3 py-1.5 capitalize ${currentPage === 'platform' && activeWorkspace === ws ? 'bg-[#1C1C1C] text-[#D5FF00] font-bold border-b-2 border-[#D5FF00]' : 'text-[#888888] hover:text-[#F4F3ED]'}`}
+                  >
+                    {ws}
+                  </button>
+                ))}
+              </nav>
+
+              {/* Right buttons */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowCopilot(true)}
+                  className="px-3 py-1.5 bg-[#141414] border border-[#2A2A2A] hover:border-[#D5FF00] text-[#D5FF00] font-mono text-xs font-bold"
+                >
+                  ✨ AI COPILOT
+                </button>
+
+                <button
+                  onClick={() => setShowSynopsis(true)}
+                  className="px-3 py-1.5 bg-[#141414] border border-[#222222] text-[#888888] hover:text-[#F4F3ED] text-xs font-mono"
+                >
+                  SYNOPSIS
+                </button>
+
+                {user ? (
+                  <div className="flex items-center gap-2 font-mono text-xs bg-[#161616] px-3 py-1 border border-[#262626]">
+                    <span className="w-2 h-2 rounded-full bg-[#D5FF00]"></span>
+                    <span>{user.name.split(' ')[0]}</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowLogin(true)}
+                    className="neon-btn px-4 py-1.5 font-grotesk text-xs uppercase tracking-wider"
+                  >
+                    SIGN IN
+                  </button>
+                )}
+              </div>
+
+            </div>
+          </header>
+
+          {/* Toast */}
+          {toast && (
+            <div className="fixed top-20 right-6 z-50 p-4 bg-[#141414] border border-[#D5FF00] text-xs font-mono text-[#F4F3ED] shadow-2xl">
+              ✓ {toast}
+            </div>
+          )}
+
+          {/* LANDING PAGE VIEW */}
+          {currentPage === 'landing' ? (
+            <div className="space-y-24">
+              
+              {/* SECTION 1: HERO */}
+              <section className="relative px-6 lg:px-12 pt-16 pb-20 border-b border-[#1F1F1F]">
+                <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+                  <div className="lg:col-span-7 space-y-6">
+                    <span className="px-3 py-1 bg-[#141414] border border-[#262626] text-xs font-mono text-[#D5FF00]">
+                      ● INDEPENDENT CREATIVE INTELLIGENCE STUDIO
+                    </span>
+                    <h1 className="font-display text-6xl sm:text-7xl lg:text-8xl tracking-tight leading-[0.92] uppercase text-[#F4F3ED]">
+                      IDEAS INTO <br />
+                      <span className="text-[#D5FF00]">IMPACT.</span> <br />
+                      <span className="text-outline">CODEFUSION.</span>
+                    </h1>
+                    <p className="text-base text-[#888888] max-w-xl leading-relaxed">
+                      We fuse code, documentation, collaboration, and continuous AI intelligence into one modular workspace that refuses to sit still.
+                    </p>
+                    <div className="flex flex-wrap gap-4 pt-4">
+                      <button
+                        onClick={() => setShowLogin(true)}
+                        className="neon-btn px-8 py-4 font-grotesk text-sm uppercase tracking-wider"
+                      >
+                        SIGN IN WITH GOOGLE / GITHUB ↗
+                      </button>
+                      <button
+                        onClick={() => { setCurrentPage('platform'); setActiveWorkspace('development'); }}
+                        className="px-6 py-4 bg-[#141414] border border-[#2A2A2A] font-grotesk text-sm uppercase"
+                      >
+                        EXPLORE WORKSPACES ↓
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Hero Right Visual */}
+                  <div className="lg:col-span-5 card-dark p-7">
+                    <div className="flex justify-between font-mono text-[10px] text-[#777777] border-b border-[#222222] pb-3 mb-4">
+                      <span>FIG. 01 — CREATIVE ENGINE</span>
+                      <span className="text-[#D5FF00]">ONLINE // 2026</span>
+                    </div>
+                    <div className="bg-[#070707] p-4 font-mono text-xs text-[#888888] border border-[#1A1A1A] space-y-1 mb-4">
+                      <p><span className="text-[#D5FF00]">const</span> app = <span className="text-[#F4F3ED]">new</span> CodeFusion();</p>
+                      <p>app.<span className="text-[#F4F3ED]">unifyWorkspaces</span>();</p>
+                      <p><span className="text-[#D5FF00]">await</span> app.<span className="text-[#D5FF00]">eliminateContextSwitching</span>();</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+                      <div className="p-3 bg-[#161616] border border-[#242424]">
+                        <span className="text-[#777777] text-[10px] block">RAG INDEX</span>
+                        <span className="font-bold text-xl text-[#D5FF00]">98.4%</span>
+                      </div>
+                      <div className="p-3 bg-[#161616] border border-[#242424]">
+                        <span className="text-[#777777] text-[10px] block">API LATENCY</span>
+                        <span className="font-bold text-xl text-[#F4F3ED]">38ms</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* TICKER */}
+              <div className="py-4 bg-[#0D0D0D] border-b border-[#1F1F1F] overflow-hidden">
+                <div className="ticker-track flex items-center gap-8 font-display text-2xl uppercase tracking-widest text-[#555555]">
+                  <span>THINK BIGGER</span><b className="text-[#D5FF00]">✳</b>
+                  <span>BUILD BOLDER</span><b className="text-[#D5FF00]">✳</b>
+                  <span>AI-POWERED INTELLIGENCE</span><b className="text-[#D5FF00]">✳</b>
+                  <span>ZERO CONTEXT SWITCHING</span><b className="text-[#D5FF00]">✳</b>
+                  <span>SUPABASE PGVECTOR</span><b className="text-[#D5FF00]">✳</b>
+                </div>
+              </div>
+
+              {/* SECTION 2: BOLD BRAND STATEMENT */}
+              <section className="px-6 lg:px-12">
+                <div className="max-w-7xl mx-auto space-y-6">
+                  <span className="font-mono text-xs text-[#777777] uppercase">01 / THE MANIFESTO</span>
+                  <h2 className="font-display text-5xl sm:text-7xl uppercase text-[#F4F3ED] leading-[0.95] max-w-5xl">
+                    MODERN DEVELOPERS LOSE <br />
+                    <span className="text-[#D5FF00]">40% OF DAILY FOCUS</span> TO CONTEXT SWITCHING. <br />
+                    <span className="text-outline">WE REBUILT THE STACK AS ONE BRAIN.</span>
+                  </h2>
+                </div>
+              </section>
+
+              {/* SECTION 3: 3 WORKSPACES */}
+              <section className="px-6 lg:px-12">
+                <div className="max-w-7xl mx-auto space-y-8">
+                  <span className="font-mono text-xs text-[#D5FF00] uppercase">02 / SELECTED WORKSPACES</span>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {[
+                      { id: 'communication', title: 'Communication Workspace', desc: 'AI Task Manager with auto subtask generation & team presence.' },
+                      { id: 'development', title: 'Development Workspace', desc: 'Source Code explorer with AST explainer & In-App API tester.' },
+                      { id: 'creative', title: 'Creative Workspace', desc: 'Automated READMEs, OpenAPI specs & Academic defense slide deck.' }
+                    ].map((ws, i) => (
+                      <div 
+                        key={i}
+                        onClick={() => { setCurrentPage('platform'); setActiveWorkspace(ws.id); }}
+                        className="card-dark p-7 min-h-[320px] flex flex-col justify-between cursor-pointer hover:border-[#D5FF00] transition-colors"
+                      >
+                        <div>
+                          <span className="font-mono text-xs text-[#777777] block mb-4">WS // 0{i + 1}</span>
+                          <h3 className="font-display text-3xl uppercase text-[#F4F3ED] mb-3">{ws.title}</h3>
+                          <p className="text-xs text-[#888888] leading-relaxed">{ws.desc}</p>
+                        </div>
+                        <span className="text-xs font-mono text-[#D5FF00] font-bold">Launch Workspace ↗</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* FOOTER */}
+              <footer className="py-12 border-t border-[#1C1C1C] px-6 lg:px-12 text-center space-y-4">
+                <h2 className="font-display text-5xl text-[#F4F3ED]">DON'T FOLLOW THE FUTURE. BUILD IT.</h2>
+                <div className="text-xs font-mono text-[#666666]">
+                  TEAM: MAYANK THAKUR • KINJAL MHABDI • URJITA SHIKHARE • PRASHAST SURVE • ACADEMIC YEAR 2026
+                </div>
+              </footer>
+
+            </div>
+          ) : (
+            /* PLATFORM WORKSPACE VIEW */
+            <div className="max-w-7xl mx-auto p-6 lg:p-12 space-y-8 flex-1">
+              
+              {/* Communication Workspace */}
+              {activeWorkspace === 'communication' && (
+                <div className="space-y-8">
+                  <div className="card-dark p-8">
+                    <span className="font-mono text-xs text-[#D5FF00]">WORKSPACE 01 // COMMUNICATION</span>
+                    <h2 className="font-display text-4xl text-[#F4F3ED] uppercase mt-1">AI Task Manager & Team Sync</h2>
+                    <div className="mt-6 pt-4 border-t border-[#222222] flex flex-wrap gap-3 text-xs font-mono">
+                      <span className="text-[#777777]">ACTIVE TEAM:</span>
+                      {projectMetadata.team.map((m, idx) => (
+                        <span key={idx} className="px-3 py-1 bg-[#141414] border border-[#262626] text-[#F4F3ED]">
+                          ● {m.name} ({m.avatar})
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {['backlog', 'in-progress', 'review', 'done'].map((lane, lIdx) => (
+                      <div key={lane} className="card-dark p-5 min-h-[460px]">
+                        <div className="font-display text-xl uppercase tracking-wider text-[#F4F3ED] border-b border-[#222222] pb-3 mb-4">
+                          {lane}
+                        </div>
+                        <div className="space-y-4">
+                          {tasks.filter(t => t.column === lane).map(task => (
+                            <div key={task.id} className="bg-[#161616] p-4 border border-[#262626] hover:border-[#D5FF00] transition-colors">
+                              <span className="text-[10px] font-mono text-[#777777] block mb-1">{task.id} • {task.priority}</span>
+                              <h4 className="font-grotesk text-xs font-bold text-[#F4F3ED] mb-2">{task.title}</h4>
+                              <p className="text-[11px] text-[#888888] bg-[#0A0A0A] p-2 border-l-2 border-[#D5FF00] mb-2">{task.aiInsight}</p>
+                              <div className="text-[10px] font-mono text-[#555555]">{task.assignee}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Development Workspace */}
+              {activeWorkspace === 'development' && (
+                <div className="space-y-8">
+                  <div className="card-dark p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <span className="font-mono text-xs text-[#D5FF00]">WORKSPACE 02 // DEVELOPMENT</span>
+                      <h2 className="font-display text-4xl text-[#F4F3ED] uppercase mt-1">Source Code Explorer & API Testing</h2>
+                    </div>
+                    <div className="flex gap-2 font-mono text-xs">
+                      <button
+                        onClick={() => setActiveDevTab('code')}
+                        className={`px-4 py-2 ${activeDevTab === 'code' ? 'bg-[#D5FF00] text-[#0A0A0A] font-bold' : 'bg-[#141414] text-[#888888]'}`}
+                      >
+                        Source Code
+                      </button>
+                      <button
+                        onClick={() => setActiveDevTab('api')}
+                        className={`px-4 py-2 ${activeDevTab === 'api' ? 'bg-[#D5FF00] text-[#0A0A0A] font-bold' : 'bg-[#141414] text-[#888888]'}`}
+                      >
+                        In-App API Tester
+                      </button>
+                    </div>
+                  </div>
+
+                  {activeDevTab === 'code' ? (
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                      <div className="card-dark p-5">
+                        <span className="font-display text-lg uppercase text-[#F4F3ED] block mb-3">Repository Files</span>
+                        {projectFiles.map((f, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setSelectedFile(f)}
+                            className={`w-full text-left p-3 font-mono text-xs mb-1.5 transition-colors ${selectedFile.name === f.name ? 'bg-[#D5FF00] text-[#0A0A0A] font-bold' : 'text-[#888888] hover:bg-[#161616]'}`}
+                          >
+                            {f.name}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="lg:col-span-3 card-dark p-6">
+                        <div className="flex justify-between font-mono text-xs border-b border-[#222222] pb-3 mb-4">
+                          <span className="text-[#D5FF00] font-bold">{selectedFile.path}</span>
+                          <span className="text-[#777777]">{selectedFile.lines} Lines</span>
+                        </div>
+                        <pre className="bg-[#070707] p-5 font-mono text-xs text-[#CCCCCC] overflow-x-auto max-h-[460px] leading-relaxed">
+                          {selectedFile.content}
+                        </pre>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="card-dark p-8 space-y-6">
+                      <div className="flex gap-2 font-mono text-xs">
+                        <span className="px-3 py-2 bg-[#1A1A1A] text-[#D5FF00] font-bold">{selectedEp.method}</span>
+                        <input
+                          type="text"
+                          readOnly
+                          value={`http://localhost:5000${selectedEp.path}`}
+                          className="flex-1 bg-[#0A0A0A] border border-[#222222] px-4 text-[#F4F3ED]"
+                        />
+                        <button
+                          onClick={handleSendApi}
+                          className="neon-btn px-6 py-2 uppercase font-grotesk"
+                        >
+                          {apiLoading ? 'Testing...' : 'Send Request'}
+                        </button>
+                      </div>
+
+                      <div className="pt-6 border-t border-[#222222]">
+                        <div className="flex justify-between font-mono text-xs text-[#777777] mb-2">
+                          <span>Status: <b className="text-[#D5FF00]">{apiResult.status} {apiResult.statusText}</b></span>
+                          <span>Latency: <b className="text-[#D5FF00]">{apiResult.time}</b></span>
+                        </div>
+                        <pre className="p-4 bg-[#070707] border border-[#222222] font-mono text-xs text-[#D5FF00]/90 overflow-x-auto">
+                          {JSON.stringify(apiResult.body, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Creative Workspace */}
+              {activeWorkspace === 'creative' && (
+                <div className="space-y-8">
+                  <div className="card-dark p-8">
+                    <span className="font-mono text-xs text-[#D5FF00]">WORKSPACE 03 // CREATIVE</span>
+                    <h2 className="font-display text-4xl text-[#F4F3ED] uppercase mt-1">Documentation & Defense Deck</h2>
+                  </div>
+
+                  <div className="card-dark p-8 sm:p-12 min-h-[420px] flex flex-col justify-between border-[#D5FF00]">
+                    <div>
+                      <span className="px-2.5 py-1 bg-[#1A1A1A] text-[#D5FF00] font-mono text-xs">
+                        {presentationSlides[slideIdx].badge}
+                      </span>
+                      <h2 className="font-display text-5xl sm:text-6xl text-[#F4F3ED] uppercase mt-6 mb-2">
+                        {presentationSlides[slideIdx].title}
+                      </h2>
+                      <p className="text-base text-[#D5FF00] font-grotesk mb-6">
+                        {presentationSlides[slideIdx].subtitle}
+                      </p>
+
+                      {presentationSlides[slideIdx].team && (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+                          {presentationSlides[slideIdx].team.map((tm, idx) => (
+                            <div key={idx} className="p-4 bg-[#141414] border border-[#242424]">
+                              <span className="font-bold text-sm text-[#F4F3ED] block">{tm.name}</span>
+                              <span className="text-xs font-mono text-[#D5FF00] block mt-1">Roll: {tm.roll}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {presentationSlides[slideIdx].points && (
+                        <ul className="space-y-2 mt-6 text-xs text-[#888888] list-disc list-inside">
+                          {presentationSlides[slideIdx].points.map((p, idx) => (
+                            <li key={idx}>{p}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <div className="pt-6 mt-8 border-t border-[#222222] flex justify-between font-mono text-xs text-[#777777]">
+                      <span>Evaluator Cue: {presentationSlides[slideIdx].notes}</span>
+                      <div className="flex gap-2">
+                        <button
+                          disabled={slideIdx === 0}
+                          onClick={() => setSlideIdx(prev => prev - 1)}
+                          className="px-3 py-1 bg-[#1C1C1C] disabled:opacity-30 text-[#F4F3ED]"
+                        >
+                          Prev
+                        </button>
+                        <button
+                          disabled={slideIdx === presentationSlides.length - 1}
+                          onClick={() => setSlideIdx(prev => prev + 1)}
+                          className="px-3 py-1 bg-[#1C1C1C] disabled:opacity-30 text-[#F4F3ED]"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          )}
+
+          {/* Login Modal */}
+          {showLogin && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+              <div className="card-dark max-w-md w-full p-8 space-y-6 relative border-[#D5FF00]">
+                <button onClick={() => setShowLogin(false)} className="absolute top-6 right-6 text-[#777777] hover:text-[#F4F3ED]">✕</button>
+                <div>
+                  <span className="font-mono text-xs text-[#D5FF00] uppercase font-bold block mb-1">SECURE PORTAL</span>
+                  <h3 className="font-display text-3xl uppercase text-[#F4F3ED]">Sign In to CodeFusion</h3>
+                </div>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => handleLogin('GitHub')}
+                    className="w-full py-3.5 bg-[#161616] hover:bg-[#1E1E1E] border border-[#2E2E2E] text-xs font-mono font-bold text-[#F4F3ED] flex items-center justify-center gap-2"
+                  >
+                    Continue with GitHub
+                  </button>
+                  <button
+                    onClick={() => handleLogin('Google')}
+                    className="w-full py-3.5 bg-[#161616] hover:bg-[#1E1E1E] border border-[#2E2E2E] text-xs font-mono font-bold text-[#F4F3ED] flex items-center justify-center gap-2"
+                  >
+                    Continue with Google
+                  </button>
+                  <button
+                    onClick={() => handleLogin('Guest Developer')}
+                    className="w-full py-3.5 neon-btn font-grotesk text-xs uppercase"
+                  >
+                    Launch Developer Guest Session ↗
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Synopsis Modal */}
+          {showSynopsis && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+              <div className="card-dark max-w-2xl w-full p-8 max-h-[85vh] overflow-y-auto space-y-6 border-[#2B2B2B]">
+                <div className="flex justify-between items-center border-b border-[#222222] pb-4">
+                  <h3 className="font-display text-2xl uppercase text-[#F4F3ED]">Project Synopsis Specification</h3>
+                  <button onClick={() => setShowSynopsis(false)} className="text-[#777777] hover:text-[#F4F3ED]">✕</button>
+                </div>
+                <div>
+                  <span className="font-mono text-xs text-[#D5FF00] uppercase block mb-2">Team Members (Year 2026)</span>
+                  <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                    {projectMetadata.team.map((m, i) => (
+                      <div key={i} className="p-3 bg-[#141414] border border-[#222222]">
+                        <span className="font-bold text-[#F4F3ED] block">{m.name}</span>
+                        <span className="text-[#D5FF00] block">Roll: {m.roll}</span>
+                        <span className="text-[#666666] block">Enr: {m.enrollment}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <span className="font-mono text-xs text-[#D5FF00] uppercase block mb-1">Abstract</span>
+                  <p className="text-xs text-[#888888] leading-relaxed">
+                    CodeFusion is an intelligent software development platform designed for students, freelancers, startups, and professional teams. Modern development requires constant switching between tools such as VS Code, GitHub, Trello, Slack, and AI assistants, which fragments knowledge. CodeFusion provides a unified workspace where coding, documentation, collaboration, API testing, analytics, and AI-guided learning coexist.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* AI Copilot Drawer */}
+          {showCopilot && (
+            <div className="fixed bottom-4 right-4 z-50 max-w-md w-full card-dark p-5 border-[#D5FF00] space-y-4">
+              <div className="flex justify-between items-center border-b border-[#222222] pb-2 font-mono text-xs">
+                <span className="text-[#D5FF00]">AI PROJECT INTELLIGENCE ENGINE</span>
+                <button onClick={() => setShowCopilot(false)} className="text-[#777777]">✕</button>
+              </div>
+              <p className="text-xs text-[#CCCCCC] leading-relaxed">
+                Continuous codebase AST is 98.4% indexed in Supabase pgvector. All 3 workspaces active.
+              </p>
+              <div className="p-3 bg-[#0A0A0A] border-l-2 border-[#D5FF00] text-xs font-mono text-[#888888]">
+                Ready to explain modules, generate READMEs, or suggest architecture improvements.
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

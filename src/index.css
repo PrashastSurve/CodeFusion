@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root {
+  color-scheme: dark;
+  --bg-jet: #0A0A0A;
+  --text-offwhite: #F4F3ED;
+  --neon-lime: #D5FF00;
+  --subtle-grey: #777777;
+  --border-grey: #222222;
+  --card-dark: #121212;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-jet);
+  color: var(--text-offwhite);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: #D5FF00;
+  color: #0A0A0A;
+}
+
+/* Custom Typography Helpers */
+.font-display {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.font-grotesk {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.font-sans {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Motorsport & Editorial Visual Classes */
+.text-outline {
+  -webkit-text-stroke: 1.5px rgba(244, 243, 237, 0.2);
+  color: transparent;
+}
+
+.text-outline-lime {
+  -webkit-text-stroke: 1.5px rgba(213, 255, 0, 0.8);
+  color: transparent;
+}
+
+.neon-btn {
+  background-color: #D5FF00;
+  color: #0A0A0A;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.neon-btn:hover {
+  background-color: #F4F3ED;
+  box-shadow: 0 0 25px rgba(213, 255, 0, 0.5);
+  transform: translateY(-1px);
+}
+
+.card-dark {
+  background-color: #121212;
+  border: 1px solid #222222;
+  transition: all 0.25s ease;
+}
+
+.card-dark:hover {
+  border-color: #333333;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+::-webkit-scrollbar-thumb {
+  background: #222222;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D5FF00;
+}
+
+/* Subtle animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideInUp {
+  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tickerMove {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: tickerMove 28s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}

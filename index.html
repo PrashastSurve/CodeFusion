@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300f0ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='12 2 2 7 12 12 22 7 12 2'/><polyline points='2 17 12 22 22 17'/><polyline points='2 12 12 17 22 12'/></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodeFusion — AI-Powered Software Development Intelligence Platform</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              fusion: {
+                dark: '#080B11',
+                card: '#0D121F',
+                border: '#1A233A',
+                hover: '#151D33',
+                cyan: '#00F0FF',
+                purple: '#8B5CF6',
+                emerald: '#10B981',
+                amber: '#F59E0B'
+              }
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace']
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Custom glowing scrollbar and utility animations */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #080B11;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1A233A;
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #00F0FF44;
+      }
+      .glow-cyan {
+        box-shadow: 0 0 25px -5px rgba(0, 240, 255, 0.25);
+      }
+      .glow-purple {
+        box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.25);
+      }
+      .glow-border {
+        position: relative;
+      }
+      .glow-border::after {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(0,240,255,0.4), rgba(139,92,246,0.1), transparent);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+      @keyframes pulseSlow {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.9; }
+      }
+      .animate-pulse-slow {
+        animation: pulseSlow 3s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body class="bg-[#080B11] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 antialiased overflow-x-hidden min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
